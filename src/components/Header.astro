@@ -1,0 +1,52 @@
+---
+import { SITE } from '../config/site';
+import { CATEGORIES } from '../config/categories';
+import { isSampleData } from '../lib/products';
+import { href } from '../lib/urls';
+
+interface Props {
+  active?: string;
+}
+const { active } = Astro.props;
+
+// 스마트스토어 상단 탭 구성과 동일한 순서
+const nav = [
+  { key: 'best', label: '베스트', href: '/best/' },
+  { key: 'new', label: '신상품', href: '/new/' },
+  ...CATEGORIES.map((c) => ({ key: c.slug, label: c.name, href: `/category/${c.slug}/` })),
+  { key: 'products', label: '전체상품', href: '/products/' },
+];
+---
+
+{
+  isSampleData() && (
+    <div class="sample-bar" role="note">
+      ⚠ 상품 데이터(data/products.json)가 없습니다. `npm run import` 로 상품을 가져오기 전까지 검색엔진 색인이 차단됩니다.
+    </div>
+  )
+}
+<div class="notice-bar">
+  주문·결제는 <a href={SITE.store.url} rel="noopener" data-outbound="notice-bar">{SITE.store.label}</a>에서 안전하게 진행됩니다
+</div>
+<header class="site-header">
+  <div class="container header-row">
+    <a class="logo" href={href('/')} aria-label={`${SITE.name} 홈`}>{SITE.name}<small>{SITE.englishName}</small></a>
+    <form class="search-form" action={href('/search/')} method="get" role="search">
+      <label class="sr-only" for="q">상품 검색</label>
+      <input id="q" name="q" type="search" placeholder="어떤 헤어 액세서리를 찾으세요?" autocomplete="off" />
+      <button type="submit" aria-label="검색">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></svg>
+      </button>
+    </form>
+    <a class="store-link" href={SITE.store.url} target="_blank" rel="noopener" data-outbound="header">스마트스토어 ›</a>
+  </div>
+  <nav class="main-nav" aria-label="주요 메뉴">
+    <div class="container">
+      <ul>
+        {nav.map((n) => (
+          <li><a href={href(n.href)} aria-current={active === n.key ? 'page' : undefined}>{n.label}</a></li>
+        ))}
+      </ul>
+    </div>
+  </nav>
+</header>

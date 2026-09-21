@@ -1,0 +1,84 @@
+# ==============================================================================
+#  개인정보·민감 정보가 GitHub 에 올라가지 않도록 하는 규칙
+#  - 규칙을 지우거나 `git add -f` 로 우회하지 마세요.
+#  - 커밋 전 점검:  npm run check:sensitive   (pre-commit 훅으로도 자동 실행)
+# ==============================================================================
+
+# ── 1. 상품·주문·고객 데이터 파일 ───────────────────────────────────────────────
+# 스마트스토어 상품 목록에는 재고수량·판매자상품코드·제조사·내부코드 등이,
+# 주문/정산/고객 내보내기에는 이름·주소·연락처가 들어 있을 수 있다.
+# 폴더나 파일명이 달라도 걸리도록 '확장자'로 막는다.
+*.csv
+*.tsv
+*.xls
+*.xlsx
+*.xlsm
+*.xlsb
+*.ods
+*.numbers
+# 상품 원본 보관 폴더
+data/source/*
+!data/source/.gitignore
+# 스토어 화면 캡처 등 참고 자료 (고객 리뷰 아이디 등이 찍혀 있을 수 있음)
+reference/
+
+# ── 2. 비밀키 · 환경변수 · 인증정보 ─────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.ppk
+id_rsa*
+id_ed25519*
+id_ecdsa*
+.npmrc
+.netrc
+.aws/
+.ssh/
+.gnupg/
+credentials*.json
+service-account*.json
+client_secret*.json
+*.secret
+*.secrets
+secrets.*
+
+# ── 3. 내부 문서 (외부 공개 금지)
+docs-internal/
+
+# ── 4. 개인 작업 환경 (경로·계정·권한 설정이 들어 있음) ─────────────────────────
+.claude/
+CLAUDE.local.md
+.vscode/
+.idea/
+*.code-workspace
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+*.swp
+*.swo
+*~
+
+# ── 5. 의존성 · 빌드 산출물 · 로그 · 임시 파일 ──────────────────────────────────
+node_modules/
+dist/
+.astro/
+*.tsbuildinfo
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+coverage/
+.cache/
+tmp/
+temp/
+*.bak
+*.orig
+*.tmp

@@ -1,0 +1,109 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE } from '../config/site';
+import { abs, href } from '../lib/urls';
+import { isSampleData } from '../lib/products';
+
+interface Props {
+  title?: string; // 비우면 홈 (브랜드 타이틀)
+  description?: string;
+  path?: string; // canonical 경로 (예: /products/123/)
+  image?: string;
+  ogType?: 'website' | 'product';
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown>[];
+  activeNav?: string;
+  stickyBuy?: boolean;
+}
+
+const {
+  title,
+  description = SITE.description,
+  path = Astro.url.pathname,
+  image = SITE.defaultOgImage,
+  ogType = 'website',
+  noindex = false,
+  jsonLd = [],
+  activeNav,
+  stickyBuy = false,
+} = Astro.props;
+
+const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} - ${SITE.tagline}`;
+// GA4 측정 ID 형식(G-XXXXXXXXXX)이 아니면 스크립트를 넣지 않는다 (오타로 인한 잘못된 태그 방지)
+const gaId = /^G-[A-Z0-9]{6,}$/i.test(SITE.analyticsId) ? SITE.analyticsId : '';
+const canonical = abs(path);
+const ogImage = abs(image);
+// 샘플 데이터로 빌드된 사이트가 색인되지 않도록 자동으로 noindex 처리
+const robots = noindex || isSampleData() ? 'noindex,nofollow' : 'index,follow,max-image-preview:large';
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={robots} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
+    <meta name="theme-color" content="#c2416c" />
+
+    {SITE.verification.naver && <meta name="naver-site-verification" content={SITE.verification.naver} />}
+    {SITE.verification.google && <meta name="google-site-verification" content={SITE.verification.google} />}
+
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta property="og:type" content={ogType === 'product' ? 'website' : ogType} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://shop-phinf.pstatic.net" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="dns-prefetch" href="https://smartstore.naver.com" />
+
+    {jsonLd.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+
+    {
+      gaId && (
+        <>
+          <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+          <script
+            is:inline
+            set:html={`window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${gaId}');`}
+          />
+
+        </>
+      )
+    }
+  </head>
+  <body class:list={[{ 'has-sticky': stickyBuy }]}>
+    <a class="skip-link" href="#main">본문 바로가기</a>
+    <Header active={activeNav} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+
+    <script is:inline>
+      // 스마트스토어로 나가는 클릭을 GA4 이벤트로 남긴다 (분석 ID 설정 시에만 gtag 가 존재)
+      document.addEventListener('click', (e) => {
+        const a = e.target instanceof Element && e.target.closest('a[data-outbound]');
+        if (!a || typeof window.gtag !== 'function') return;
+        window.gtag('event', 'click_smartstore', {
+          link_url: a.href,
+          product_id: a.dataset.productId || '',
+          location: a.dataset.outbound,
+        });
+      });
+    </script>
+  </body>
+</html>

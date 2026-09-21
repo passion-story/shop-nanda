@@ -1,0 +1,53 @@
+---
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/urls';
+---
+
+<Base title="상품 검색" description="샵난다 상품 검색" path="/search/" noindex>
+  <div class="container">
+    <div class="page-title">
+      <h1 id="search-title">상품 검색</h1>
+      <p id="search-status" aria-live="polite"></p>
+    </div>
+    <div style="height:20px"></div>
+    <ul class="product-grid" id="search-results"></ul>
+  </div>
+
+  <script define:vars={{ indexUrl: href('/search-index.json') }}>
+    const q = (new URLSearchParams(location.search).get('q') || '').trim();
+    const status = document.getElementById('search-status');
+    const list = document.getElementById('search-results');
+    const input = document.getElementById('q');
+    if (input) input.value = q;
+
+    const norm = (s) => s.toLowerCase().replace(/\s+/g, '');
+    const won = (n) => n.toLocaleString('ko-KR') + '원';
+    const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+
+    if (!q) {
+      status.textContent = '검색어를 입력해 주세요.';
+    } else {
+      document.getElementById('search-title').textContent = `“${q}” 검색 결과`;
+      fetch(indexUrl)
+        .then((r) => r.json())
+        .then((items) => {
+          const words = q.toLowerCase().split(/\s+/).filter(Boolean);
+          const hits = items.filter((it) => {
+            const hay = norm(`${it.n} ${it.t.join(' ')} ${it.c}`);
+            return words.every((w) => hay.includes(norm(w)));
+          });
+          status.textContent = hits.length ? `${hits.length}개의 상품을 찾았어요.` : '일치하는 상품이 없습니다. 다른 검색어로 시도해 보세요.';
+          list.innerHTML = hits
+            .map(
+              (it) => `<li><a class="card" href="${it.u}">
+                <div class="thumb">${it.i ? `<img src="${it.i}" alt="${esc(it.n)}" loading="lazy" width="400" height="400" referrerpolicy="no-referrer">` : `<div class="thumb-ph"><span>${esc(it.c)}</span></div>`}</div>
+                <h3>${esc(it.n)}</h3>
+                <div class="price">${it.r ? `<span class="rate">${it.r}%</span>` : ''}<span class="now">${won(it.p)}</span></div>
+              </a></li>`,
+            )
+            .join('');
+        })
+        .catch(() => (status.textContent = '검색 중 오류가 발생했습니다.'));
+    }
+  </script>
+</Base>

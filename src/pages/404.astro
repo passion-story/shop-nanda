@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import { href } from '../lib/urls';
+---
+
+<Base title="페이지를 찾을 수 없어요" description="요청하신 페이지를 찾을 수 없습니다." path="/404/" noindex>
+  <div class="container">
+    <div class="empty">
+      <h1 style="font-size:28px;margin-bottom:8px">페이지를 찾을 수 없어요</h1>
+      <p>주소가 바뀌었거나 판매가 종료된 상품일 수 있어요.</p>
+      <p style="margin-top:20px">
+        <a class="btn btn-primary" href={href('/')}>홈으로</a>
+        <a class="btn btn-ghost" href={href('/products/')}>전체상품 보기</a>
+      </p>
+    </div>
+  </div>
+</Base>

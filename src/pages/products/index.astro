@@ -1,0 +1,33 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProductListing from '../../components/ProductListing.astro';
+import { CATEGORIES } from '../../config/categories';
+import { getListed } from '../../lib/products';
+import { breadcrumbs, itemList } from '../../lib/jsonld';
+import { href } from '../../lib/urls';
+
+const products = getListed();
+const crumbs = [{ name: '홈', path: '/' }, { name: '전체상품', path: '/products/' }];
+---
+
+<Base
+  title="전체상품 - 헤어 액세서리·가발·패션잡화"
+  description="샵난다의 전체 상품입니다. 가발, 헤어끈, 헤어핀, 헤어밴드, 패션잡화, 뷰티소품, 생활용품을 인기도·할인율·가격순으로 둘러보세요."
+  path="/products/"
+  activeNav="products"
+  jsonLd={[breadcrumbs(crumbs), itemList('샵난다 전체상품', products)]}
+>
+  <Breadcrumb items={crumbs} />
+  <div class="container">
+    <div class="page-title">
+      <h1>전체상품</h1>
+      <p>샵난다의 모든 상품을 한눈에 확인하세요.</p>
+    </div>
+    <div class="chip-row">
+      <a class="chip" href={href('/products/')} aria-current="page">전체</a>
+      {CATEGORIES.map((c) => <a class="chip" href={href(`/category/${c.slug}/`)}>{c.name}</a>)}
+    </div>
+    <ProductListing products={products} />
+  </div>
+</Base>

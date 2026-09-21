@@ -1,0 +1,162 @@
+---
+import Base from '../layouts/Base.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { SITE } from '../config/site';
+import { CATEGORIES } from '../config/categories';
+import { getBest, getNew, getListed, getReviews, getCategoryCover, won } from '../lib/products';
+import { organization, website } from '../lib/jsonld';
+import { href } from '../lib/urls';
+import { cardImage, imageSized } from '../lib/images';
+
+const best = getBest(8);
+const fresh = getNew(8);
+const reviews = getReviews().slice(0, 3);
+const total = getListed().length;
+const heroImages = getBest(12).filter((p) => p.image).slice(0, 4);
+const catCount = (slug: string) => getListed().filter((p) => p.category.slug === slug).length;
+
+const banners = [
+  { en: 'The Best Deal', ko: '지금 가장 많이 할인 중인 상품', href: '/products/?sort=discount', bg: 'linear-gradient(135deg,#e5303f,#f0774d)' },
+  { en: 'Fashion Access.', ko: '가방·스카프·모자 패션잡화', href: '/category/fashion-goods/', bg: 'linear-gradient(135deg,#5b4b8a,#8a72c4)' },
+  { en: 'Beauty Tool', ko: 'Help you to relax', href: '/category/beauty-tool/', bg: 'linear-gradient(135deg,#d97a9b,#f2a8bd)' },
+];
+---
+
+<Base
+  description={SITE.description}
+  path="/"
+  activeNav="home"
+  jsonLd={[organization(), website()]}
+>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div>
+        <span class="eyebrow">{SITE.tagline}</span>
+        <h1>섬세한 디테일,<br /><em>트렌디한</em> 패션아이템을<br />만나보세요</h1>
+        <p class="lead">
+          가발·헤어끈·헤어핀·헤어밴드부터 패션잡화, 뷰티소품까지. {SITE.name}가 고른 {total > 0 ? `${total.toLocaleString('ko-KR')}가지` : ''} 데일리 아이템을 둘러보세요.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href={href('/best/')}>베스트 상품 보기</a>
+          <a class="btn btn-ghost" href={href('/products/')}>전체상품</a>
+        </div>
+      </div>
+      {
+        heroImages.length > 0 && (
+          <div class="hero-collage" aria-hidden="true">
+            {heroImages.map((p) => (
+              <div class="tile"><img src={cardImage(p.image!).src} srcset={cardImage(p.image!).srcset} sizes="(max-width: 860px) 45vw, 240px" alt="" width="400" height="400" loading="eager" referrerpolicy="no-referrer" /></div>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <div class="container trust-row">
+    <div><span class="ico">1</span><span><strong>상품 확인은 여기서</strong>카테고리·베스트로 쉽게 찾기</span></div>
+    <div><span class="ico">2</span><span><strong>결제는 스마트스토어에서</strong>네이버페이로 안전하게</span></div>
+    <div><span class="ico">3</span><span><strong>배송·교환·반품도 동일</strong>기존 스토어 기준 그대로</span></div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-head"><div><h2>카테고리</h2></div></div>
+      <div class="cat-grid">
+        {
+          CATEGORIES.map((c) => {
+            const cover = getCategoryCover(c.slug);
+            const count = catCount(c.slug);
+            return (
+              <a class="cat-tile" href={href(`/category/${c.slug}/`)}>
+                <span class="cover" style={`--ph:${c.accent}`}>
+                  {cover?.image ? (
+                    <img src={imageSized(cover.image, 'f300_300')} alt="" width="300" height="300" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                  ) : (
+                    <span class="thumb-ph">{c.name}</span>
+                  )}
+                </span>
+                <span class="label">{c.name}{count > 0 && <small>{count}개 상품</small>}</span>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    best.length > 0 && (
+      <section class="section soft">
+        <div class="container">
+          <div class="section-head">
+            <div><h2>월간 베스트</h2><p>요즘 가장 많이 찾는 인기 상품</p></div>
+            <a class="more-link" href={href('/best/')}>더보기 ›</a>
+          </div>
+          <ul class="product-grid">
+            {best.map((p, i) => <li><ProductCard product={p} rank={i + 1} eager={i < 4} /></li>)}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    fresh.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div><h2>신상품</h2><p>새로 들어온 아이템</p></div>
+            <a class="more-link" href={href('/new/')}>더보기 ›</a>
+          </div>
+          <ul class="product-grid">
+            {fresh.map((p) => <li><ProductCard product={p} /></li>)}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="section soft">
+    <div class="container">
+      <div class="banner-grid">
+        {
+          banners.map((b) => (
+            <a class="banner" href={href(b.href)} style={`background:${b.bg}`}>
+              <div><div class="en">{b.en}</div><div class="ko">{b.ko}</div></div>
+              <span class="go">바로가기 ›</span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  {
+    reviews.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <div class="section-head"><div><h2>베스트 리뷰 상품</h2><p>구매하신 분들의 실제 후기</p></div></div>
+          <div class="review-grid">
+            {reviews.map((r) => (
+              <a class="review" href={href(r.product.path)}>
+                <div class="pimg">
+                  {r.product.image ? (
+                    <img src={imageSized(r.product.image, 'f120_120')} alt={r.product.name} width="96" height="96" loading="lazy" referrerpolicy="no-referrer" />
+                  ) : (
+                    <div class="thumb-ph" style={`--ph:${r.product.category.accent}`}>{r.product.category.name}</div>
+                  )}
+                </div>
+                <div class="body">
+                  <span class="pname">{r.product.name}</span>
+                  <q>{r.text}</q>
+                  <span class="meta">{r.author} · {r.date.replaceAll('-', '.')} · {won(r.product.salePrice)}</span>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</Base>

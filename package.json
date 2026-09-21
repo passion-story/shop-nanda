@@ -1,0 +1,26 @@
+{
+  "name": "shop-nanda",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "import": "node scripts/import-excel.mjs",
+    "check:sensitive": "node scripts/check-sensitive.mjs"
+  },
+  "dependencies": {
+    "astro": "^7.3.3",
+    "read-excel-file": "^9.3.10"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/node": "^22.20.4",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

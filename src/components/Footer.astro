@@ -1,0 +1,53 @@
+---
+import { SITE } from '../config/site';
+import { CATEGORIES } from '../config/categories';
+import { href } from '../lib/urls';
+
+const b = SITE.business;
+const biz: [string, string][] = [
+  ['상호', b.companyName],
+  ['대표', b.representative],
+  ['사업자등록번호', b.registrationNumber],
+  ['통신판매업신고', b.mailOrderNumber],
+  ['주소', b.address],
+  ['이메일', b.email],
+  ['고객센터', b.phone],
+];
+const filled = biz.filter(([, v]) => v);
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="f-top">
+      <div>
+        <div class="f-brand">{SITE.name}</div>
+        <div>{SITE.tagline}</div>
+      </div>
+      <div>
+        <div class="f-links">
+          {CATEGORIES.map((c) => <a href={href(`/category/${c.slug}/`)}>{c.name}</a>)}
+        </div>
+        <div class="f-links">
+          <a href={href('/about/')}>브랜드 소개</a>
+          <a href={href('/shipping/')}>배송·교환·반품 안내</a>
+          <a href={href('/faq/')}>자주 묻는 질문</a>
+          <a href={SITE.store.url} target="_blank" rel="noopener">스마트스토어 바로가기</a>
+        </div>
+      </div>
+    </div>
+    <div class="f-biz">
+      {
+        filled.length > 0 && (
+          <div>
+            {filled.map(([k, v]) => <span>{k} {v}</span>)}
+          </div>
+        )
+      }
+      <p class="f-note">
+        본 사이트는 {SITE.name}의 상품 소개 페이지이며, 상품 주문·결제·배송·교환·반품은 {SITE.store.label}에서 진행됩니다.
+        상품 가격·재고·옵션은 스마트스토어 기준이며 변동될 수 있습니다.
+      </p>
+      <p class="f-note">© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
+    </div>
+  </div>
+</footer>

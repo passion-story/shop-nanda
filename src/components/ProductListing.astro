@@ -1,0 +1,90 @@
+---
+import type { Product } from '../lib/products';
+import ProductCard from './ProductCard.astro';
+import { availableSorts } from '../lib/products';
+
+interface Props {
+  products: Product[]; // 인기도순으로 정렬된 상태로 전달
+  showRank?: boolean;
+  sortable?: boolean;
+}
+const { products, showRank = false, sortable = true } = Astro.props;
+
+// 스마트스토어 '전체상품'과 동일한 정렬 옵션. 판매량·리뷰·평점 데이터가 없으면 해당 정렬은 숨긴다.
+const has = availableSorts();
+const sorts = [
+  ['popular', '추천순'],
+  ['new', '최신 등록순'],
+  ['price-asc', '낮은 가격순'],
+  ['price-desc', '높은 가격순'],
+  ['discount', '할인율순'],
+  has.sales ? ['sales', '누적 판매순'] : null,
+  has.reviews ? ['reviews', '리뷰 많은순'] : null,
+  has.rating ? ['rating', '평점 높은순'] : null,
+].filter((v): v is string[] => !!v);
+---
+
+<div data-listing>
+  {
+    sortable && (
+      <div class="sortbar" role="group" aria-label="정렬">
+        <span class="count">총 {products.length.toLocaleString('ko-KR')}개</span>
+        {sorts.map(([key, label], i) => (
+          <button type="button" data-sort={key} aria-pressed={i === 0 ? 'true' : 'false'}>{label}</button>
+        ))}
+      </div>
+    )
+  }
+  {
+    products.length === 0 ? (
+      <p class="empty">등록된 상품이 없습니다.</p>
+    ) : (
+      <ul class="product-grid" data-grid>
+        {products.map((p, i) => (
+          <li data-index={i}>
+            <ProductCard product={p} rank={showRank ? i + 1 : undefined} eager={i < 4} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</div>
+
+<script>
+  // 서버에서 이미 인기도순으로 렌더링되어 있으므로 JS 없이도 목록은 완전하다. (SEO 영향 없음)
+  const root = document.querySelector<HTMLElement>('[data-listing]');
+  const grid = root?.querySelector<HTMLElement>('[data-grid]');
+  const buttons = root?.querySelectorAll<HTMLButtonElement>('[data-sort]');
+  if (root && grid && buttons?.length) {
+    const items = [...grid.children] as HTMLElement[];
+    const num = (el: HTMLElement, k: string) => Number(el.querySelector<HTMLElement>('.card')?.dataset[k] ?? 0);
+    const str = (el: HTMLElement, k: string) => el.querySelector<HTMLElement>('.card')?.dataset[k] ?? '';
+    const idx = (el: HTMLElement) => Number(el.dataset.index);
+
+    const sorters: Record<string, (a: HTMLElement, b: HTMLElement) => number> = {
+      popular: (a, b) => idx(a) - idx(b),
+      new: (a, b) => str(b, 'reg').localeCompare(str(a, 'reg')) || idx(a) - idx(b),
+      'price-asc': (a, b) => num(a, 'price') - num(b, 'price'),
+      'price-desc': (a, b) => num(b, 'price') - num(a, 'price'),
+      discount: (a, b) => num(b, 'rate') - num(a, 'rate'),
+      sales: (a, b) => num(b, 'sales') - num(a, 'sales') || idx(a) - idx(b),
+      reviews: (a, b) => num(b, 'reviews') - num(a, 'reviews') || idx(a) - idx(b),
+      rating: (a, b) => num(b, 'rating') - num(a, 'rating') || num(b, 'reviews') - num(a, 'reviews'),
+    };
+
+    const apply = (key: string, push = true) => {
+      if (!sorters[key]) key = 'popular';
+      grid.replaceChildren(...[...items].sort(sorters[key]));
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sort === key)));
+      if (push) {
+        const u = new URL(location.href);
+        key === 'popular' ? u.searchParams.delete('sort') : u.searchParams.set('sort', key);
+        history.replaceState(null, '', u);
+      }
+    };
+
+    buttons.forEach((b) => b.addEventListener('click', () => apply(b.dataset.sort!)));
+    const initial = new URLSearchParams(location.search).get('sort');
+    if (initial) apply(initial, false);
+  }
+</script>

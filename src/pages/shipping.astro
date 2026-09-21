@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { SITE } from '../config/site';
+import { breadcrumbs } from '../lib/jsonld';
+import { won } from '../lib/products';
+
+const crumbs = [{ name: '홈', path: '/' }, { name: '배송·교환·반품 안내', path: '/shipping/' }];
+---
+
+<Base
+  title="배송·교환·반품 안내"
+  description={`${SITE.name} 상품의 배송비, 교환·반품 신청 방법 안내. 주문과 결제는 네이버 스마트스토어에서 진행됩니다.`}
+  path="/shipping/"
+  jsonLd={[breadcrumbs(crumbs)]}
+>
+  <Breadcrumb items={crumbs} />
+  <div class="container">
+    <article class="prose">
+      <h1>배송·교환·반품 안내</h1>
+      <p class="meta">주문·결제가 이뤄지는 {SITE.store.label} 기준 안내입니다.</p>
+
+      <h2>배송</h2>
+      <ul>
+        <li>기본 배송비는 {won(SITE.defaultShippingFee)}입니다. (상품별로 다를 수 있으며, 정확한 배송비는 스마트스토어 상품 페이지에서 확인해 주세요.)</li>
+        <li>출고일·도착 예정일은 상품과 재고 상황에 따라 달라지며, 결제 화면과 주문 상세에서 확인하실 수 있습니다.</li>
+        <li>배송 조회는 네이버 <strong>주문 내역</strong>에서 가능합니다.</li>
+      </ul>
+
+      <h2>교환·반품</h2>
+      <ul>
+        <li>교환·반품은 네이버 <strong>주문 내역</strong>에서 신청하거나, 스마트스토어의 톡톡 문의로 접수하실 수 있습니다.</li>
+        <li>단순 변심에 의한 교환·반품은 상품 수령 후 정해진 기간 내에 가능하며, 왕복 배송비는 구매자 부담입니다. (구체적인 기간과 조건은 각 상품의 스마트스토어 안내를 따릅니다.)</li>
+        <li>상품 불량·오배송의 경우 배송비는 판매자가 부담합니다.</li>
+        <li>착용·사용 흔적이 있거나 포장이 훼손되어 재판매가 어려운 상품은 교환·반품이 제한될 수 있습니다.</li>
+      </ul>
+
+      <h2>문의</h2>
+      <p>
+        주문·배송·교환·반품 관련 문의는
+        <a href={SITE.store.url} target="_blank" rel="noopener">{SITE.store.label}</a>의 문의(톡톡)를 이용해 주세요.
+      </p>
+    </article>
+  </div>
+</Base>

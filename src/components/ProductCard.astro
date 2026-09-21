@@ -1,0 +1,67 @@
+---
+import type { Product } from '../lib/products';
+import { won } from '../lib/products';
+import { href } from '../lib/urls';
+import { cardImage, CARD_SIZES } from '../lib/images';
+
+interface Props {
+  product: Product;
+  rank?: number;
+  eager?: boolean;
+}
+const { product: p, rank, eager = false } = Astro.props;
+const img = p.image ? cardImage(p.image) : null;
+---
+
+<a
+  class="card"
+  href={href(p.path)}
+  data-price={p.salePrice}
+  data-rate={p.discountRate}
+  data-reg={p.registeredAt ?? ''}
+  data-sales={p.salesCount ?? 0}
+  data-reviews={p.reviewCount ?? 0}
+  data-rating={p.rating ?? 0}
+>
+  <div class="thumb">
+    {
+      img ? (
+        <img
+          src={img!.src}
+          srcset={img!.srcset}
+          sizes={img!.srcset ? CARD_SIZES : undefined}
+          alt={p.name}
+          width="400"
+          height="400"
+          loading={eager ? 'eager' : 'lazy'}
+          decoding="async"
+          referrerpolicy="no-referrer"
+        />
+      ) : (
+        <div class="thumb-ph" style={`--ph:${p.category.accent}`}>
+          <span>{p.category.name}<small>이미지 준비중</small></span>
+        </div>
+      )
+    }
+    {rank && <span class="rank">{rank}</span>}
+    {p.badge && <span class="badge">{p.badge}</span>}
+    {p.status === 'OUTOFSTOCK' && <span class="soldout">일시품절</span>}
+  </div>
+  <h3>{p.name}</h3>
+  <div class="price">
+    {p.discountRate > 0 && <span class="orig">{won(p.price)}</span>}
+    {p.discountRate > 0 && <span class="rate">{p.discountRate}%</span>}
+    <span class="now">{won(p.salePrice)}</span>
+    <span class="ship">배송비 {p.shippingFee ? won(p.shippingFee) : '무료'}</span>
+  </div>
+  {
+    p.tags.length > 0 && (
+      <div class="tags">{p.tags.slice(0, 3).map((t) => <span>#{t}</span>)}</div>
+    )
+  }
+  {
+    p.rating && p.reviewCount ? (
+      <div class="rating">★ <b>{p.rating}</b> · 리뷰 {p.reviewCount.toLocaleString('ko-KR')}</div>
+    ) : null
+  }
+</a>

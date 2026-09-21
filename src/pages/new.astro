@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import ProductListing from '../components/ProductListing.astro';
+import { getNew } from '../lib/products';
+import { breadcrumbs, itemList } from '../lib/jsonld';
+
+const products = getNew(40);
+const crumbs = [{ name: '홈', path: '/' }, { name: '신상품', path: '/new/' }];
+---
+
+<Base
+  title="신상품 - 새로 들어온 헤어 액세서리·패션잡화"
+  description="샵난다에 새로 등록된 신상품을 가장 먼저 만나보세요. 신상 헤어핀, 가발, 패션잡화를 매주 업데이트합니다."
+  path="/new/"
+  activeNav="new"
+  jsonLd={[breadcrumbs(crumbs), itemList('샵난다 신상품', products)]}
+>
+  <Breadcrumb items={crumbs} />
+  <div class="container">
+    <div class="page-title">
+      <h1>신상품</h1>
+      <p>새로 들어온 아이템을 가장 먼저 만나보세요.</p>
+    </div>
+    <div style="height:16px"></div>
+    <ProductListing products={products} sortable={false} />
+  </div>
+</Base>

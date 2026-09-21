@@ -1,0 +1,20 @@
+---
+import { href } from '../lib/urls';
+
+interface Props {
+  items: { name: string; path?: string }[]; // 마지막 항목은 현재 페이지(path 없음 가능)
+}
+const { items } = Astro.props;
+---
+
+<nav class="breadcrumb container" aria-label="현재 위치">
+  <ol>
+    {
+      items.map((it, i) => (
+        <li>
+          {it.path && i < items.length - 1 ? <a href={href(it.path)}>{it.name}</a> : <span aria-current="page">{it.name}</span>}
+        </li>
+      ))
+    }
+  </ol>
+</nav>

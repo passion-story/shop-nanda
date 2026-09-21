@@ -1,0 +1,28 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import ProductListing from '../components/ProductListing.astro';
+import { getBest } from '../lib/products';
+import { breadcrumbs, itemList } from '../lib/jsonld';
+
+const products = getBest(40);
+const crumbs = [{ name: '홈', path: '/' }, { name: '베스트', path: '/best/' }];
+---
+
+<Base
+  title="베스트 상품 - 인기 헤어 액세서리·가발"
+  description="샵난다에서 가장 인기 있는 베스트 상품 모음. 곱창밴드, 집게핀, 부분가발 등 지금 가장 많이 찾는 아이템을 확인하세요."
+  path="/best/"
+  activeNav="best"
+  jsonLd={[breadcrumbs(crumbs), itemList('샵난다 베스트', products)]}
+>
+  <Breadcrumb items={crumbs} />
+  <div class="container">
+    <div class="page-title">
+      <h1>베스트</h1>
+      <p>지금 가장 인기 있는 상품입니다.</p>
+    </div>
+    <div style="height:16px"></div>
+    <ProductListing products={products} showRank sortable={false} />
+  </div>
+</Base>

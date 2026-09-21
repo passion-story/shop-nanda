@@ -1,0 +1,166 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import { SITE } from '../../config/site';
+import { getAllProductPages, getRelated, productDescription, won } from '../../lib/products';
+import { breadcrumbs, productLd } from '../../lib/jsonld';
+import { href } from '../../lib/urls';
+import { imageSized } from '../../lib/images';
+
+export function getStaticPaths() {
+  return getAllProductPages().map((product) => ({ params: { id: product.id }, props: { product } }));
+}
+
+const { product: p } = Astro.props;
+const related = getRelated(p, 4);
+const description = productDescription(p);
+const soldOut = p.status !== 'SALE';
+const gone = !p.listed; // 판매중지/삭제 상품 — 색인 제외
+
+const shortName = p.name.length > 56 ? `${p.name.slice(0, 55).trim()}…` : p.name;
+const crumbs = [
+  { name: '홈', path: '/' },
+  { name: p.category.name, path: `/category/${p.category.slug}/` },
+  { name: shortName, path: p.path },
+];
+const gallery = p.images;
+const intro =
+  p.intro ??
+  `“${p.name}” 상품은 ${SITE.name}의 ${p.category.name} 카테고리에서 만나보실 수 있습니다. ${
+    p.discountRate ? `정가 ${won(p.price)}에서 ${p.discountRate}% 할인된 ${won(p.salePrice)}에 판매 중입니다.` : `판매가는 ${won(p.salePrice)}입니다.`
+  }`;
+---
+
+<Base
+  title={p.seoTitle ?? shortName}
+  description={description}
+  path={p.path}
+  image={gallery[0] ? imageSized(gallery[0], 'm1000') : SITE.defaultOgImage}
+  ogType="product"
+  noindex={gone}
+  activeNav={p.category.slug}
+  stickyBuy
+  jsonLd={[breadcrumbs(crumbs), productLd(p, description)]}
+>
+  <Breadcrumb items={crumbs} />
+
+  <div class="container">
+    <article class="pdp">
+      <div class="gallery">
+        <div class="main">
+          {
+            gallery.length > 0 ? (
+              <img id="pdp-main" src={imageSized(gallery[0], 'f640_640')} srcset={`${imageSized(gallery[0], 'f640_640')} 640w, ${imageSized(gallery[0], 'm1000')} 1000w`} sizes="(max-width: 860px) 100vw, 560px" alt={p.name} width="800" height="800" loading="eager" fetchpriority="high" referrerpolicy="no-referrer" />
+            ) : (
+              <div class="thumb-ph" style={`--ph:${p.category.accent}`}><span>{p.category.name}<small>이미지 준비중</small></span></div>
+            )
+          }
+        </div>
+        {
+          gallery.length > 1 && (
+            <div class="thumbs">
+              {gallery.map((g, i) => (
+                <button type="button" data-src={imageSized(g, 'f640_640')} data-full={imageSized(g, 'm1000')} aria-current={i === 0 ? 'true' : 'false'} aria-label={`이미지 ${i + 1}`}>
+                  <img src={imageSized(g, 'f120_120')} alt="" width="68" height="68" loading="lazy" referrerpolicy="no-referrer" />
+                </button>
+              ))}
+            </div>
+          )
+        }
+      </div>
+
+      <div class="pdp-info">
+        <a class="cat" href={href(`/category/${p.category.slug}/`)}>{p.category.name}</a>
+        <h1>{p.name}</h1>
+        {
+          p.rating && p.reviewCount ? (
+            <div class="rating-line">★ <b>{p.rating}</b> · 스마트스토어 리뷰 {p.reviewCount.toLocaleString('ko-KR')}개</div>
+          ) : null
+        }
+
+        <div class="pdp-price">
+          {p.discountRate > 0 && <div class="orig">{won(p.price)}</div>}
+          <div class="line">
+            {p.discountRate > 0 && <span class="rate">{p.discountRate}%</span>}
+            <span class="now">{won(p.salePrice)}</span>
+          </div>
+        </div>
+
+        <table class="spec">
+          <tbody>
+            <tr><th>배송비</th><td>{p.shippingFee ? won(p.shippingFee) : '무료배송'}{p.shippingType === '조건부 무료' && ' (조건 충족 시 무료 · 조건은 스마트스토어에서 확인)'}</td></tr>
+            <tr><th>판매처</th><td>{SITE.name} ({SITE.store.label})</td></tr>
+            <tr><th>결제</th><td>네이버페이 · 스마트스토어 결제 페이지에서 진행</td></tr>
+            {soldOut && <tr><th>상태</th><td>{p.status === 'OUTOFSTOCK' ? '일시품절 — 재입고 여부는 스마트스토어에서 확인해 주세요' : '판매가 종료된 상품입니다'}</td></tr>}
+          </tbody>
+        </table>
+
+        {p.tags.length > 0 && <ul class="tag-list">{p.tags.map((t) => <li>#{t}</li>)}</ul>}
+
+        <div class="buy-box">
+          {
+            gone ? (
+              <a class="btn btn-ghost" href={href(`/category/${p.category.slug}/`)}>같은 카테고리 상품 보기</a>
+            ) : (
+              <a class="btn btn-naver" href={p.buyUrl} target="_blank" rel="noopener" data-outbound="pdp" data-product-id={p.id}>
+                {soldOut ? '스마트스토어에서 재고 확인하기' : '네이버 스마트스토어에서 구매하기'}
+              </a>
+            )
+          }
+          <small>버튼을 누르면 {SITE.store.label}의 상품 페이지로 이동하며, 주문·결제는 그곳에서 진행됩니다.</small>
+        </div>
+
+        <ol class="steps">
+          <li>이 페이지에서 상품 확인</li>
+          <li>스마트스토어에서 옵션 선택</li>
+          <li>네이버페이로 결제</li>
+        </ol>
+      </div>
+    </article>
+
+    <section class="pdp-body">
+      <h2>상품 소개</h2>
+      <p>{intro}</p>
+      <h2>구매 전 확인해 주세요</h2>
+      <p>
+        옵션(색상·사이즈 등), 실시간 재고, 쿠폰·포인트 적용 여부는 스마트스토어 상품 페이지 기준입니다.
+        배송·교환·반품 절차는 <a href={href('/shipping/')} style="color:var(--brand);text-decoration:underline">배송·교환·반품 안내</a>에서 확인하실 수 있습니다.
+      </p>
+    </section>
+
+    {
+      related.length > 0 && (
+        <section class="section" style="padding-top:8px">
+          <div class="section-head"><div><h2>같은 카테고리 상품</h2></div><a class="more-link" href={href(`/category/${p.category.slug}/`)}>{p.category.name} 전체보기 ›</a></div>
+          <ul class="product-grid">
+            {related.map((r) => <li><ProductCard product={r} /></li>)}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+
+  {
+    !gone && (
+      <div class="sticky-buy">
+        <div class="p"><small>{p.discountRate > 0 ? `${p.discountRate}% 할인` : '판매가'}</small>{won(p.salePrice)}</div>
+        <a class="btn btn-naver" href={p.buyUrl} target="_blank" rel="noopener" data-outbound="pdp-sticky" data-product-id={p.id}>스마트스토어에서 구매</a>
+      </div>
+    )
+  }
+
+  <script>
+    const main = document.getElementById('pdp-main') as HTMLImageElement | null;
+    const thumbs = document.querySelectorAll<HTMLButtonElement>('.gallery .thumbs button');
+    thumbs.forEach((b) =>
+      b.addEventListener('click', () => {
+        if (main) {
+          main.removeAttribute('srcset');
+          main.src = b.dataset.full || b.dataset.src!;
+        }
+        thumbs.forEach((t) => t.setAttribute('aria-current', String(t === b)));
+      }),
+    );
+  </script>
+</Base>

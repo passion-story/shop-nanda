@@ -1,0 +1,44 @@
+---
+import Base from '../../layouts/Base.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import ProductListing from '../../components/ProductListing.astro';
+import { CATEGORIES } from '../../config/categories';
+import { getByCategory } from '../../lib/products';
+import { breadcrumbs, itemList } from '../../lib/jsonld';
+import { href } from '../../lib/urls';
+
+export function getStaticPaths() {
+  return CATEGORIES.map((category) => ({ params: { slug: category.slug }, props: { category } }));
+}
+
+const { category } = Astro.props;
+const products = getByCategory(category.slug);
+const path = `/category/${category.slug}/`;
+const crumbs = [{ name: '홈', path: '/' }, { name: category.name, path }];
+---
+
+<Base
+  title={`${category.seoName} 모음`}
+  description={category.description}
+  path={path}
+  noindex={products.length === 0}
+  activeNav={category.slug}
+  jsonLd={[breadcrumbs(crumbs), itemList(`샵난다 ${category.name}`, products)]}
+>
+  <Breadcrumb items={crumbs} />
+  <div class="container">
+    <div class="page-title">
+      <h1>{category.name}</h1>
+      <p>{category.description}</p>
+    </div>
+    <div class="chip-row">
+      <a class="chip" href={href('/products/')}>전체</a>
+      {
+        CATEGORIES.map((c) => (
+          <a class="chip" href={href(`/category/${c.slug}/`)} aria-current={c.slug === category.slug ? 'page' : undefined}>{c.name}</a>
+        ))
+      }
+    </div>
+    <ProductListing products={products} />
+  </div>
+</Base>
