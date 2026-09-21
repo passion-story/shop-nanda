@@ -78,7 +78,7 @@ const robots = noindex || isSampleData() ? 'noindex,nofollow' : 'index,follow,ma
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="dns-prefetch" href="https://smartstore.naver.com" />
 
-    {jsonLd.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj)} />)}
+    {jsonLd.map((obj) => <script type="application/ld+json" set:html={JSON.stringify(obj).replace(/</g, '\\u003c')} />)}
 
     {
       gaId && (

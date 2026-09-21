@@ -39,8 +39,8 @@ import { href } from '../lib/urls';
           status.textContent = hits.length ? `${hits.length}개의 상품을 찾았어요.` : '일치하는 상품이 없습니다. 다른 검색어로 시도해 보세요.';
           list.innerHTML = hits
             .map(
-              (it) => `<li><a class="card" href="${it.u}">
-                <div class="thumb">${it.i ? `<img src="${it.i}" alt="${esc(it.n)}" loading="lazy" width="400" height="400" referrerpolicy="no-referrer">` : `<div class="thumb-ph"><span>${esc(it.c)}</span></div>`}</div>
+              (it) => `<li><a class="card" href="${esc(it.u)}">
+                <div class="thumb">${it.i ? `<img src="${esc(it.i)}" alt="${esc(it.n)}" loading="lazy" width="400" height="400" referrerpolicy="no-referrer">` : `<div class="thumb-ph"><span>${esc(it.c)}</span></div>`}</div>
                 <h3>${esc(it.n)}</h3>
                 <div class="price">${it.r ? `<span class="rate">${it.r}%</span>` : ''}<span class="now">${won(it.p)}</span></div>
               </a></li>`,

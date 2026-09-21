@@ -73,7 +73,7 @@ const sorts = [
     };
 
     const apply = (key: string, push = true) => {
-      if (!sorters[key]) key = 'popular';
+      if (!Object.hasOwn(sorters, key)) key = 'popular';
       grid.replaceChildren(...[...items].sort(sorters[key]));
       buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.sort === key)));
       if (push) {

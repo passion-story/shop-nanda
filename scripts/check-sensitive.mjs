@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // 커밋 전 개인정보·민감 정보 점검. .gitignore 를 `git add -f` 로 우회하거나, 파일 '안에' 섞여 들어간 값을 잡는다.
 //
-// 사용법:  npm run check:sensitive           스테이징된 파일만 검사 (pre-commit 훅이 이걸 실행)
+// 사용법:  npm run check:sensitive           스테이징된 파일만 검사
 //          npm run check:sensitive -- --all  git 이 추적하거나 추적 가능한(무시되지 않은) 모든 파일 검사
 //
-// 위반이 있으면 종료 코드 1 → 커밋이 중단된다.
+// 위반이 있으면 종료 코드 1 로 끝난다.
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
