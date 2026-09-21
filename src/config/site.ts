@@ -4,7 +4,7 @@
  */
 export const SITE = {
   name: '샵난다',
-  englishName: 'Sharp Nanda',
+  englishName: 'Shop Nanda',
   tagline: '패션 잡화 · 헤어 액세서리 셀렉트샵',
   description:
     '샵난다는 가발·헤어끈·헤어핀·헤어밴드·패션잡화·뷰티소품을 만나볼 수 있는 패션 잡화 헤어 액세서리 셀렉트샵입니다. 섬세한 디테일과 트렌디한 패션아이템을 만나보세요.',
