@@ -35,6 +35,7 @@ const intro =
 <Base
   title={p.seoTitle ?? shortName}
   description={description}
+  keywords={[p.category.name, ...p.category.seoKeywords.slice(0, 5)]}
   path={p.path}
   image={gallery[0] ? imageSized(gallery[0], 'm1000') : SITE.defaultOgImage}
   ogType="product"

@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { classify, getCategory, type Category } from '../config/categories';
 import { SITE, storeProductUrl } from '../config/site';
+import { MAX_DESCRIPTION, clamp } from './text';
 
 /** 스크립트(가져오기/동기화)가 쓰는 원본 형태 — data/products.json */
 export interface RawProduct {
@@ -206,14 +207,11 @@ export function getReviews(): (Review & { product: Product })[] {
 
 export const won = (n: number) => `${n.toLocaleString('ko-KR')}원`;
 
-/** 상품 상세의 검색결과용 설명 (수동 지정 > 자동 생성) */
+/** 상품 상세의 검색결과용 설명 (수동 지정 > 자동 생성). 80자 이내 */
 export function productDescription(p: Product): string {
   if (p.seoDescription) return p.seoDescription;
-  const parts = [
-    `${p.name}`,
-    p.discountRate ? `${p.discountRate}% 할인된 ${won(p.salePrice)}` : `${won(p.salePrice)}`,
-    `${p.category.name} 카테고리 인기 상품`,
-  ];
-  if (p.rating && p.reviewCount) parts.push(`평점 ${p.rating} (리뷰 ${p.reviewCount.toLocaleString('ko-KR')}개)`);
-  return `${parts.join(' · ')}. 주문·결제는 네이버 스마트스토어에서 안전하게 진행됩니다.`;
+  const price = p.discountRate ? `${won(p.salePrice)}(${p.discountRate}% 할인)` : won(p.salePrice);
+  const tail = ` · ${price} · ${p.category.name} | 네이버 스마트스토어`;
+  // 설명문은 MAX_DESCRIPTION 자 이내: 남는 길이만큼만 상품명을 쓴다.
+  return `${clamp(p.name, MAX_DESCRIPTION - Array.from(tail).length)}${tail}`;
 }

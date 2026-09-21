@@ -5,6 +5,7 @@ import Footer from '../components/Footer.astro';
 import { SITE } from '../config/site';
 import { abs, href } from '../lib/urls';
 import { isSampleData } from '../lib/products';
+import { MAX_DESCRIPTION, clamp } from '../lib/text';
 
 interface Props {
   title?: string; // 비우면 홈 (브랜드 타이틀)
@@ -14,22 +15,28 @@ interface Props {
   ogType?: 'website' | 'product';
   noindex?: boolean;
   jsonLd?: Record<string, unknown>[];
+  keywords?: string[]; // 페이지 고유 키워드 (사이트 공통 키워드 앞에 붙는다)
   activeNav?: string;
   stickyBuy?: boolean;
 }
 
 const {
   title,
-  description = SITE.description,
+  description: rawDescription = SITE.description,
   path = Astro.url.pathname,
   image = SITE.defaultOgImage,
   ogType = 'website',
   noindex = false,
   jsonLd = [],
+  keywords: pageKeywords = [],
   activeNav,
   stickyBuy = false,
 } = Astro.props;
 
+// meta description / og:description / twitter:description 은 80자 이내로 통일 (네이버 서치어드바이저 권고)
+const description = clamp(rawDescription, MAX_DESCRIPTION);
+// meta keywords: 페이지 키워드 → 사이트 공통 키워드 순, 중복 제거, 최대 15개
+const keywords = [...new Set([...pageKeywords, ...SITE.keywords])].slice(0, 15).join(', ');
 const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} - ${SITE.tagline}`;
 // GA4 측정 ID 형식(G-XXXXXXXXXX)이 아니면 스크립트를 넣지 않는다 (오타로 인한 잘못된 태그 방지)
 const gaId = /^G-[A-Z0-9]{6,}$/i.test(SITE.analyticsId) ? SITE.analyticsId : '';
@@ -46,6 +53,7 @@ const robots = noindex || isSampleData() ? 'noindex,nofollow' : 'index,follow,ma
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
     <meta name="robots" content={robots} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />

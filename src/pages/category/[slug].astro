@@ -20,6 +20,7 @@ const crumbs = [{ name: '홈', path: '/' }, { name: category.name, path }];
 <Base
   title={`${category.seoName} 모음`}
   description={category.description}
+  keywords={category.seoKeywords}
   path={path}
   noindex={products.length === 0}
   activeNav={category.slug}
