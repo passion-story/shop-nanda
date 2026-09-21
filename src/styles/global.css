@@ -261,4 +261,5 @@ details.faq p { margin-top: 10px; color: var(--ink-2); }
 .site-footer .f-links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 16px; }
 .site-footer .f-biz { border-top: 1px solid #332c29; margin-top: 20px; padding-top: 20px; }
 .site-footer .f-biz span + span::before { content: '|'; margin: 0 8px; color: #4a413d; }
+.site-footer .f-biz span.line-start::before { content: none; }
 .site-footer .f-note { margin-top: 12px; color: #8b827e; }

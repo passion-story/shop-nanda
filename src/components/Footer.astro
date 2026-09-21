@@ -39,7 +39,12 @@ const filled = biz.filter(([, v]) => v);
       {
         filled.length > 0 && (
           <div>
-            {filled.map(([k, v]) => <span>{k} {v}</span>)}
+            {filled.map(([k, v]) => (
+              <>
+                {k === '이메일' && <br />}
+                <span class={k === '이메일' ? 'line-start' : undefined}>{k} {v}</span>
+              </>
+            ))}
           </div>
         )
       }
@@ -47,7 +52,7 @@ const filled = biz.filter(([, v]) => v);
         본 사이트는 {SITE.name}의 상품 소개 페이지이며, 상품 주문·결제·배송·교환·반품은 {SITE.store.label}에서 진행됩니다.
         상품 가격·재고·옵션은 스마트스토어 기준이며 변동될 수 있습니다.
       </p>
-      <p class="f-note">© {new Date().getFullYear()} {SITE.name}. All rights reserved.</p>
+      <p class="f-note">© {new Date().getFullYear()} {b.companyName || SITE.name}. All rights reserved.</p>
     </div>
   </div>
 </footer>
