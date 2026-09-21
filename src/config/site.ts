@@ -34,13 +34,13 @@ export const SITE = {
    * 실제 값은 스마트스토어 판매자 정보와 동일하게 기재할 것.
    */
   business: {
-    companyName: '', // TODO: 상호
-    representative: '', // TODO: 대표자
-    registrationNumber: '', // TODO: 사업자등록번호
-    mailOrderNumber: '', // TODO: 통신판매업 신고번호
-    address: '', // TODO: 사업장 소재지
-    email: '', // TODO
-    phone: '', // TODO: 고객센터 번호
+    companyName: '패션스토리', // TODO: 상호
+    representative: '김재원', // TODO: 대표자
+    registrationNumber: '208-17-77488', // TODO: 사업자등록번호
+    mailOrderNumber: '2018-서울강서-0716', // TODO: 통신판매업 신고번호
+    address: '서울시 강서구 강서로 454 웅진프라자 402호', // TODO: 사업장 소재지
+    email: 'joantree0@gmail.com', // TODO
+    phone: '010-8462-1298', // TODO: 고객센터 번호
   },
 
   /** 대표 SNS 등 (있을 때만 JSON-LD sameAs 로 출력) */
