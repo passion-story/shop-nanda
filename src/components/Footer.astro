@@ -42,7 +42,7 @@ const filled = biz.filter(([, v]) => v);
             {filled.map(([k, v]) => (
               <>
                 {k === '이메일' && <br />}
-                <span class={k === '이메일' ? 'line-start' : undefined}>{k} {v}</span>
+                <span class={k === '이메일' ? 'line-start' : undefined}><strong>{k}</strong> {v}</span>
               </>
             ))}
           </div>
