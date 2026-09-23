@@ -16,9 +16,7 @@ export const GET: APIRoute = () => {
     { path: '/products/', lastmod: dataDate },
     ...CATEGORIES.filter((c) => getByCategory(c.slug).length > 0).map((c) => ({ path: `/category/${c.slug}/`, lastmod: dataDate })),
     ...getListed().map((p) => ({ path: p.path, lastmod: day(p.modifiedAt) ?? dataDate })),
-    { path: '/about/' },
-    { path: '/shipping/' },
-    { path: '/faq/' },
+    // /about/, /faq/, /shipping/ 은 noindex 라 사이트맵에 넣지 않는다 (제출 URL이 noindex라는 서치콘솔 경고 방지).
   ];
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

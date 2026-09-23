@@ -14,6 +14,7 @@ interface Props {
   image?: string;
   ogType?: 'website' | 'product';
   noindex?: boolean;
+  nofollow?: boolean; // true면 이 페이지의 링크도 따라가지 않음 (검색결과·오류 페이지 등 저품질 페이지용)
   jsonLd?: Record<string, unknown>[];
   keywords?: string[]; // 페이지 고유 키워드 (사이트 공통 키워드 앞에 붙는다)
   activeNav?: string;
@@ -27,6 +28,7 @@ const {
   image = SITE.defaultOgImage,
   ogType = 'website',
   noindex = false,
+  nofollow = false,
   jsonLd = [],
   keywords: pageKeywords = [],
   activeNav,
@@ -43,7 +45,13 @@ const gaId = /^G-[A-Z0-9]{6,}$/i.test(SITE.analyticsId) ? SITE.analyticsId : '';
 const canonical = abs(path);
 const ogImage = abs(image);
 // 샘플 데이터로 빌드된 사이트가 색인되지 않도록 자동으로 noindex 처리
-const robots = noindex || isSampleData() ? 'noindex,nofollow' : 'index,follow,max-image-preview:large';
+// noindex 단독: 색인만 제외하고 페이지 내 링크는 계속 따라가게 함 (About·FAQ 같은 일반 페이지용)
+// noindex+nofollow: 링크도 따라가지 않음 (검색결과·404 같은 저품질/중복 페이지용)
+const robots = isSampleData()
+  ? 'noindex,nofollow'
+  : noindex
+    ? `noindex,${nofollow ? 'nofollow' : 'follow'}`
+    : 'index,follow,max-image-preview:large';
 ---
 
 <!doctype html>

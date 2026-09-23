@@ -13,6 +13,7 @@ const crumbs = [{ name: '홈', path: '/' }, { name: '배송·교환·반품 안�
   description={`${SITE.name} 상품의 배송비, 교환·반품 신청 방법 안내. 주문과 결제는 네이버 스마트스토어에서 진행됩니다.`}
   path="/shipping/"
   jsonLd={[breadcrumbs(crumbs)]}
+  noindex
 >
   <Breadcrumb items={crumbs} />
   <div class="container">
