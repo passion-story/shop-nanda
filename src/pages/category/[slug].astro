@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import ProductListing from '../../components/ProductListing.astro';
 import { CATEGORIES } from '../../config/categories';
+import { SITE } from '../../config/site';
 import { getByCategory } from '../../lib/products';
 import { breadcrumbs, itemList } from '../../lib/jsonld';
 import { href } from '../../lib/urls';
@@ -18,7 +19,8 @@ const crumbs = [{ name: '홈', path: '/' }, { name: category.name, path }];
 ---
 
 <Base
-  title={`${category.seoName} 모음`}
+  title={`${category.name}-${SITE.name}`}
+  titleFull
   description={category.description}
   keywords={category.seoKeywords}
   path={path}

@@ -9,6 +9,7 @@ import { MAX_DESCRIPTION, clamp } from '../lib/text';
 
 interface Props {
   title?: string; // 비우면 홈 (브랜드 타이틀)
+  titleFull?: boolean; // true면 title 을 <title> 그대로 사용 (자동으로 " | 사이트명" 을 붙이지 않음)
   description?: string;
   path?: string; // canonical 경로 (예: /products/123/)
   image?: string;
@@ -23,6 +24,7 @@ interface Props {
 
 const {
   title,
+  titleFull = false,
   description: rawDescription = SITE.description,
   path = Astro.url.pathname,
   image = SITE.defaultOgImage,
@@ -39,7 +41,7 @@ const {
 const description = clamp(rawDescription, MAX_DESCRIPTION);
 // meta keywords: 페이지 키워드 → 사이트 공통 키워드 순, 중복 제거, 최대 15개
 const keywords = [...new Set([...pageKeywords, ...SITE.keywords])].slice(0, 15).join(', ');
-const fullTitle = title ? `${title} | ${SITE.name}` : `${SITE.name} - ${SITE.tagline}`;
+const fullTitle = title && titleFull ? title : title ? `${title} | ${SITE.name}` : `${SITE.name} - ${SITE.tagline}`;
 // GA4 측정 ID 형식(G-XXXXXXXXXX)이 아니면 스크립트를 넣지 않는다 (오타로 인한 잘못된 태그 방지)
 const gaId = /^G-[A-Z0-9]{6,}$/i.test(SITE.analyticsId) ? SITE.analyticsId : '';
 const canonical = abs(path);
