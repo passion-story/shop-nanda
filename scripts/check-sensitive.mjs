@@ -93,18 +93,6 @@ for (const f of files) {
   }
 }
 
-// ---- 4) 경고: 커밋 작성자 이메일은 GitHub 에 공개된다 (차단하지는 않음) ----
-try {
-  const email = git('config', 'user.email').trim();
-  if (email && !/noreply\.github\.com$/i.test(email)) {
-    console.warn(`⚠ 커밋 작성자 이메일이 공개됩니다: ${email}`);
-    console.warn('  개인 이메일을 숨기려면 GitHub 의 noreply 주소를 사용하세요.');
-    console.warn('  git config user.email "<숫자>+<사용자명>@users.noreply.github.com"   (GitHub > Settings > Emails 에서 확인)\n');
-  }
-} catch {
-  /* user.email 미설정 */
-}
-
 if (problems.length) {
   console.error(`\n민감 정보 점검 실패 — ${problems.length}건 (검사 파일 ${files.length}개)\n`);
   console.error(problems.join('\n'));
