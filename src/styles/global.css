@@ -57,7 +57,7 @@ ul, ol { padding: 0; list-style: none; }
 .search-form input { width: 100%; height: 40px; border: 1px solid var(--line); border-radius: 999px; padding: 0 44px 0 16px; background: var(--bg-soft); }
 .search-form input:focus { background: #fff; border-color: var(--brand); outline: none; }
 .search-form button { position: absolute; right: 4px; top: 4px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: var(--brand); color: #fff; cursor: pointer; display: grid; place-items: center; }
-.store-link { flex: none; font-size: 14px; font-weight: 700; color: #fff; background: var(--naver); padding: 9px 14px; border-radius: 999px; white-space: nowrap; }
+.store-link { flex: none; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--naver); padding: 9px 14px; border-radius: 999px; white-space: nowrap; }
 .store-link:hover { filter: brightness(0.95); }
 
 .main-nav { border-top: 1px solid var(--line); }
@@ -98,7 +98,7 @@ main { min-height: 60vh; }
 .btn-primary:hover { background: var(--brand-dark); }
 .btn-ghost { background: #fff; color: var(--ink); border-color: var(--line); }
 .btn-ghost:hover { border-color: var(--ink); }
-.btn-naver { background: var(--naver); color: #fff; font-size: 17px; padding: 16px 24px; }
+.btn-naver { background: var(--naver); color: var(--ink); font-size: 17px; padding: 16px 24px; }
 .btn-naver:hover { filter: brightness(0.94); }
 
 /* ---------- 히어로 / 카테고리 ---------- */
