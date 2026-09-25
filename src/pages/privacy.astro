@@ -1,0 +1,93 @@
+---
+import Base from '../layouts/Base.astro';
+import Breadcrumb from '../components/Breadcrumb.astro';
+import { SITE } from '../config/site';
+import { breadcrumbs } from '../lib/jsonld';
+
+const b = SITE.business;
+const crumbs = [{ name: '홈', path: '/' }, { name: '개인정보처리방침', path: '/privacy/' }];
+---
+
+<Base
+  title="개인정보처리방침"
+  description={`${SITE.name}의 개인정보 처리 방침 안내. 본 사이트는 회원가입·주문 양식이 없으며 방문 통계 도구만 사용합니다.`}
+  path="/privacy/"
+  jsonLd={[breadcrumbs(crumbs)]}
+  noindex
+>
+  <Breadcrumb items={crumbs} />
+  <div class="container">
+    <article class="prose">
+      <h1>개인정보처리방침</h1>
+      <p class="meta">시행일: 2026년 9월 25일</p>
+
+      <p>
+        {b.companyName || SITE.name}(이하 “{SITE.name}”)는 「개인정보 보호법」 등 관련 법령을 준수하며, 이용자의 개인정보를 아래와 같이 처리합니다.
+      </p>
+
+      <h2>1. 수집하는 개인정보</h2>
+      <ul>
+        <li>본 사이트에는 회원가입, 주문, 문의 양식이 없으며, 이름·연락처·주소 등을 직접 수집하지 않습니다.</li>
+        {
+          SITE.analyticsId && (
+            <li>
+              방문 통계를 위해 Google Analytics 4를 사용하며, 이때 방문 페이지, 클릭 이벤트(스마트스토어 이동 포함), 기기·브라우저 정보, 대략적인 접속 지역, 쿠키 식별자가 자동으로 수집됩니다.
+            </li>
+          )
+        }
+        <li>웹 서버·CDN을 이용하는 과정에서 접속 IP 등 접속 기록이 해당 서비스 제공자에게 전송될 수 있습니다.</li>
+      </ul>
+
+      {
+        SITE.analyticsId && (
+          <>
+            <h2>2. 이용 목적과 보유 기간</h2>
+            <ul>
+              <li>이용 목적: 방문 통계 분석 및 사이트 개선</li>
+              <li>보유 기간: Google Analytics에 설정된 데이터 보존 기간까지</li>
+            </ul>
+
+            <h2>3. 제3자 제공 및 국외 이전</h2>
+            <ul>
+              <li>제공받는 자: Google LLC (Google Analytics)</li>
+              <li>이전 국가: Google이 운영하는 서버가 위치한 국가(미국 등)</li>
+              <li>항목: 위 1항의 자동 수집 정보 / 목적: 방문 통계 분석 / 보유 기간: 위 2항과 같음</li>
+              <li>
+                이전 거부 방법: 브라우저 쿠키 차단 또는 <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics 차단 부가기능</a>을 이용하실 수 있습니다.
+              </li>
+            </ul>
+          </>
+        )
+      }
+
+      <h2>{SITE.analyticsId ? '4' : '2'}. 외부 서비스</h2>
+      <ul>
+        <li>
+          상품 이미지는 네이버 이미지 서버(shop-phinf.pstatic.net)에서, 글꼴은 jsDelivr CDN에서 불러옵니다. 이 과정에서 접속 IP 등이 해당 서비스로 전송될 수 있습니다.
+        </li>
+        <li>
+          상품 주문·결제·배송·교환·반품은 <a href={SITE.store.url} target="_blank" rel="noopener">{SITE.store.label}</a>에서 이뤄지며, 해당 과정의 개인정보는 네이버의 개인정보처리방침에 따라 처리됩니다.
+        </li>
+      </ul>
+
+      <h2>{SITE.analyticsId ? '5' : '3'}. 이용자의 권리</h2>
+      <p>이용자는 개인정보의 열람·정정·삭제·처리정지를 요청할 수 있으며, 아래 책임자에게 연락하시면 지체 없이 조치하겠습니다.</p>
+
+      <h2>{SITE.analyticsId ? '6' : '4'}. 개인정보 보호책임자</h2>
+      <ul>
+        {b.representative && <li>책임자: {b.representative} (대표)</li>}
+        {b.email && <li>이메일: {b.email}</li>}
+        {b.phone && <li>연락처: {b.phone}</li>}
+      </ul>
+
+      <h2>{SITE.analyticsId ? '7' : '5'}. 권리침해 구제 방법</h2>
+      <ul>
+        <li>개인정보침해신고센터: privacy.kisa.or.kr / 국번 없이 118</li>
+        <li>개인정보분쟁조정위원회: kopico.go.kr / 1833-6972</li>
+      </ul>
+
+      <h2>{SITE.analyticsId ? '8' : '6'}. 방침의 변경</h2>
+      <p>본 방침은 법령이나 서비스 변경에 따라 수정될 수 있으며, 변경 시 이 페이지에 공지합니다.</p>
+    </article>
+  </div>
+</Base>
