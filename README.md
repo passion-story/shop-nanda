@@ -1,6 +1,6 @@
-# 샵난다
+# 샵난다 웹사이트
 
-[샵난다](https://smartstore.naver.com/shopnanda) 상품 소개 웹사이트 
+[샵난다](https://www.shopnanda.com) 쇼핑몰 웹사이트 프로젝트
 
 [Astro](https://astro.build) 기반 정적 사이트입니다.
 
