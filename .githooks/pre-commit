@@ -1,0 +1,3 @@
+#!/bin/sh
+# 커밋 전 민감 정보 점검 (scripts/check-sensitive.mjs). 위반 시 커밋 중단.
+exec node scripts/check-sensitive.mjs
