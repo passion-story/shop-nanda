@@ -50,13 +50,13 @@ const STATUS = [
 
 const args = process.argv.slice(2);
 const flags = new Set(args.filter((a) => a.startsWith('--')));
-// 파일을 생략하면 data/source/ 에서 가장 최근에 수정된 상품 파일을 사용한다.
+// 파일을 생략하면 data/source/ 에서 가장 최근에 수정된 상품 파일을 사용한다. (파일명에 '리뷰'가 들어간 리뷰 엑셀은 제외)
 function latestSourceFile() {
   const dir = path.join(ROOT, 'data', 'source');
   if (!fs.existsSync(dir)) return undefined;
   return fs
     .readdirSync(dir)
-    .filter((f) => /\.(csv|xlsx)$/i.test(f) && !f.startsWith('.'))
+    .filter((f) => /\.(csv|xlsx)$/i.test(f) && !f.startsWith('.') && !/리뷰|review/i.test(f.normalize('NFC')))
     .map((f) => ({ f: path.join(dir, f), t: fs.statSync(path.join(dir, f)).mtimeMs }))
     .sort((a, b) => b.t - a.t)[0]?.f;
 }

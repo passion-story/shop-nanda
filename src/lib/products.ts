@@ -53,7 +53,9 @@ export interface Product extends RawProduct {
 
 export interface Review {
   productId: string;
+  rating?: number;
   text: string;
+  photo?: string; // 리뷰 사진 (네이버 이미지 서버 주소)
   author: string;
   date: string;
 }
@@ -80,6 +82,16 @@ function load() {
   // data/products.json 이 없으면 빈 사이트로 빌드하고 검색엔진 색인을 차단한다(source: 'sample').
   const dataset = readJson<Dataset>('products.json') ?? { source: 'sample' as const, products: [] };
   const overrides = readJson<{ products?: Record<string, Override> }>('overrides.json')?.products ?? {};
+  const storeReviews = readJson<{ reviews?: Review[] }>('store-reviews.json')?.reviews ?? [];
+  // 리뷰 엑셀로 가져온 평점으로 상품별 평균 평점·리뷰 수를 만든다 (상품 데이터에 값이 있으면 그것을 우선)
+  const stats = new Map<string, { sum: number; n: number }>();
+  for (const r of storeReviews) {
+    if (!r.rating) continue;
+    const st = stats.get(r.productId) ?? { sum: 0, n: 0 };
+    st.sum += r.rating;
+    st.n++;
+    stats.set(r.productId, st);
+  }
 
   const products: Product[] = [];
   for (const raw of dataset.products) {
@@ -92,6 +104,7 @@ function load() {
     const categorySlug = o.category ?? classify(raw.name, raw.categoryHint);
     const image = raw.image ?? raw.images?.[0] ?? null;
     const images = [...new Set([image, ...(raw.images ?? [])].filter((v): v is string => !!v))];
+    const st = stats.get(raw.id);
 
     products.push({
       ...raw,
@@ -99,6 +112,8 @@ function load() {
       price,
       salePrice,
       shippingFee: raw.shippingFee ?? SITE.defaultShippingFee,
+      rating: raw.rating ?? (st ? Math.round((st.sum / st.n) * 10) / 10 : undefined),
+      reviewCount: raw.reviewCount ?? st?.n,
       tags: o.tags ?? raw.tags ?? [],
       image,
       images,
@@ -203,6 +218,22 @@ export function getReviews(): (Review & { product: Product })[] {
   return list
     .map((r) => ({ ...r, product: products.find((p) => p.id === r.productId) }))
     .filter((r): r is Review & { product: Product } => !!r.product && r.product.listed);
+}
+
+/** 상품 상세에 보여줄 리뷰: 내용이나 사진이 있는 3점 이상 리뷰만, 사진 리뷰 먼저 → 최신순 (메인용 reviews.json 과 가져온 리뷰를 합쳐 중복 제거) */
+export function getProductReviews(productId: string, limit = 6): Review[] {
+  const all = [
+    ...(readJson<{ reviews?: Review[] }>('reviews.json')?.reviews ?? []),
+    ...(readJson<{ reviews?: Review[] }>('store-reviews.json')?.reviews ?? []),
+  ].filter((r) => r.productId === productId && (r.text || r.photo) && (r.rating ?? 5) >= 3); // 3점 미만은 노출하지 않는다 (평균 평점·리뷰 수에는 포함)
+  const seen = new Set<string>();
+  return all
+    .filter((r) => {
+      const key = `${r.text}|${r.photo ?? ''}`;
+      return !seen.has(key) && !!seen.add(key);
+    })
+    .sort((a, b) => Number(!!b.photo) - Number(!!a.photo) || b.date.localeCompare(a.date))
+    .slice(0, limit);
 }
 
 export const won = (n: number) => `${n.toLocaleString('ko-KR')}원`;

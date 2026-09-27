@@ -3,7 +3,7 @@ import Base from '../../layouts/Base.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import { SITE } from '../../config/site';
-import { getAllProductPages, getRelated, productDescription, won } from '../../lib/products';
+import { getAllProductPages, getProductReviews, getRelated, productDescription, won } from '../../lib/products';
 import { breadcrumbs, productLd } from '../../lib/jsonld';
 import { href } from '../../lib/urls';
 import { imageSized } from '../../lib/images';
@@ -14,6 +14,8 @@ export function getStaticPaths() {
 
 const { product: p } = Astro.props;
 const related = getRelated(p, 4);
+const reviews = getProductReviews(p.id);
+// 리뷰 사진 리사이즈: 사진 리뷰(checkout.phinf)는 f300_300, 영상 리뷰 썸네일(image.nmv)은 w640 만 지원한다
 const description = productDescription(p);
 const soldOut = p.status !== 'SALE';
 const gone = !p.listed; // 판매중지/삭제 상품 — 색인 제외
@@ -42,7 +44,7 @@ const intro =
   noindex={gone}
   activeNav={p.category.slug}
   stickyBuy
-  jsonLd={[breadcrumbs(crumbs), productLd(p, description)]}
+  jsonLd={[breadcrumbs(crumbs), productLd(p, description, reviews)]}
 >
   <Breadcrumb items={crumbs} />
 
@@ -105,15 +107,16 @@ const intro =
               <a class="btn btn-ghost" href={href(`/category/${p.category.slug}/`)}>같은 카테고리 상품 보기</a>
             ) : (
               <a class="btn btn-naver" href={p.buyUrl} target="_blank" rel="noopener" data-outbound="pdp" data-product-id={p.id}>
-                {soldOut ? '스마트스토어에서 재고 확인하기' : '네이버 스마트스토어에서 구매하기'}
+                {soldOut ? '스마트스토어에서 재고 확인하기' : '네이버 스마트스토어에서 상품 확인하기'}
               </a>
             )
           }
         </div>
+        {!gone && <p class="buy-note">상세 사진과 설명, 옵션은 스마트스토어 상품 페이지에서 볼 수 있어요.</p>}
 
         <ol class="steps">
-          <li>이 페이지에서 상품 확인</li>
-          <li>스마트스토어에서 옵션 선택</li>
+          <li>이 페이지에서 상품 둘러보기</li>
+          <li>스마트스토어에서 상세 정보·옵션 확인</li>
           <li>네이버페이로 결제</li>
         </ol>
       </div>
@@ -122,6 +125,36 @@ const intro =
     <section class="pdp-body">
       <h2>상품 소개</h2>
       <p>{intro}</p>
+
+
+      {
+        reviews.length > 0 && (
+          <>
+            <h2 id="reviews">구매 후기{p.reviewCount ? ` ${p.reviewCount.toLocaleString('ko-KR')}개` : ''}</h2>
+            {p.rating && (
+              <p class="review-avg">
+                <span class="stars" aria-hidden="true">{'★'.repeat(Math.round(p.rating))}{'☆'.repeat(5 - Math.round(p.rating))}</span>
+                <span>평균 별점 <b>{p.rating.toFixed(1)}</b> / 5</span>
+              </p>
+            )}
+            <ul class="pdp-reviews">
+              {reviews.map((r) => (
+                <li>
+                  {r.rating && <span class="stars" aria-label={`별점 5점 중 ${r.rating}점`}>{'★'.repeat(Math.round(r.rating))}{'☆'.repeat(5 - Math.round(r.rating))}</span>}
+                  {r.text && <p>{r.text}</p>}
+                  {r.photo && (
+                    <a class="review-photo" href={`${r.photo}?type=w640`} target="_blank" rel="noopener">
+                      <img src={`${r.photo}?type=${r.photo.includes('/checkout.phinf/') ? 'f300_300' : 'w640'}`} alt={`${r.author}님의 리뷰 사진`} width="120" height="120" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
+                    </a>
+                  )}
+                  <span class="meta">{r.author}{r.date && ` · ${r.date.replaceAll('-', '.')}`}</span>
+                </li>
+              ))}
+            </ul>
+            {!gone && <a class="more-link" href={p.buyUrl} target="_blank" rel="noopener" data-outbound="pdp-reviews" data-product-id={p.id}>스마트스토어에서 전체 후기 보기 ›</a>}
+          </>
+        )
+      }
       <h2>구매 전 확인해 주세요</h2>
       <p>
         옵션(색상·사이즈 등), 실시간 재고, 쿠폰·포인트 적용 여부는 스마트스토어 상품 페이지 기준입니다.
@@ -145,7 +178,7 @@ const intro =
     !gone && (
       <div class="sticky-buy">
         <div class="p"><small>{p.discountRate > 0 ? `${p.discountRate}% 할인` : '판매가'}</small>{won(p.salePrice)}</div>
-        <a class="btn btn-naver" href={p.buyUrl} target="_blank" rel="noopener" data-outbound="pdp-sticky" data-product-id={p.id}>스마트스토어에서 구매</a>
+        <a class="btn btn-naver" href={p.buyUrl} target="_blank" rel="noopener" data-outbound="pdp-sticky" data-product-id={p.id}>스마트스토어에서 확인</a>
       </div>
     )
   }

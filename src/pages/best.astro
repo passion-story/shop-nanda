@@ -5,7 +5,7 @@ import ProductListing from '../components/ProductListing.astro';
 import { getBest } from '../lib/products';
 import { breadcrumbs, itemList } from '../lib/jsonld';
 
-const products = getBest(40);
+const products = getBest(4);
 const crumbs = [{ name: '홈', path: '/' }, { name: '베스트', path: '/best/' }];
 ---
 

@@ -71,7 +71,7 @@ export const SITE = {
   defaultOgImage: '/og-default.png',
 };
 
-/** 상품 상세의 "구매하기" 버튼이 향하는 URL 을 만든다. 상품 번호를 모르면 스토어 내 검색으로 대체한다. */
+/** 상품 상세의 "스마트스토어에서 상품 확인하기" 버튼이 향하는 URL 을 만든다. 상품 번호를 모르면 스토어 내 검색으로 대체한다. */
 export function storeProductUrl(productNo: string | undefined, fallbackQuery?: string): string {
   if (productNo && /^\d+$/.test(productNo)) {
     return `${SITE.store.url}/products/${productNo}`;

@@ -221,12 +221,22 @@ main { min-height: 60vh; }
 .buy-box .btn { width: 100%; }
 .buy-box small { color: var(--ink-3); font-size: 13px; text-align: center; }
 .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 20px; counter-reset: s; }
-.steps li { background: var(--bg-soft); border-radius: 10px; padding: 12px; font-size: 13px; color: var(--ink-2); counter-increment: s; }
-.steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 800; margin-right: 6px; }
+.steps li { background: var(--bg-soft); border-radius: 10px; padding: 12px; font-size: 13px; color: var(--ink-2); counter-increment: s; display: grid; grid-template-columns: 20px 1fr; gap: 6px; align-items: start; }
+.steps li::before { content: counter(s); display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: var(--brand); color: #fff; font-size: 12px; font-weight: 800; }
 @media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
 .pdp-body { padding: 8px 0 48px; max-width: 820px; }
 .pdp-body h2 { font-size: 20px; margin: 28px 0 10px; }
 .pdp-body p { color: var(--ink-2); }
+.buy-note { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
+.pdp-body .review-avg { display: flex; align-items: center; gap: 8px; margin: -2px 0 14px; color: var(--ink); font-size: 15px; }
+.review-avg .stars { color: #b45309; font-size: 18px; letter-spacing: 1px; }
+.pdp-reviews { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 12px; }
+.pdp-reviews li { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+.pdp-reviews .stars { color: #b45309; letter-spacing: 1px; font-size: 14px; }
+.pdp-reviews p { margin: 6px 0; color: var(--ink); }
+.review-photo { display: inline-block; margin: 2px 0 8px; }
+.review-photo img { width: 120px; height: 120px; object-fit: cover; border-radius: 10px; background: var(--bg-soft); }
+.pdp-reviews .meta { font-size: 13px; color: var(--ink-2); }
 .sticky-buy { display: none; }
 @media (max-width: 860px) {
   .sticky-buy { display: flex; gap: 10px; align-items: center; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); background: #fff; border-top: 1px solid var(--line); box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06); }

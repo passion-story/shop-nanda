@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install dev build preview check import sensitive clean
+.PHONY: help install dev build preview check import reviews sensitive clean
 
 help: ## 명령 목록
 	@grep -E '^[a-z]+:.*## ' $(MAKEFILE_LIST) | sed -E 's/:.*## /\t/'
@@ -21,6 +21,9 @@ check: ## 타입 검사
 
 import: ## data/source 엑셀/CSV → data/products.json
 	npm run import
+
+reviews: ## data/source 리뷰 엑셀 → data/store-reviews.json
+	npm run import:reviews
 
 sensitive: ## 커밋 전 민감정보 점검 (전체 파일)
 	npm run check:sensitive -- --all

@@ -1,7 +1,7 @@
 import { SITE } from '../config/site';
 import { abs } from './urls';
 import { imageFull } from './images';
-import type { Product } from './products';
+import type { Product, Review } from './products';
 
 
 export function organization() {
@@ -65,7 +65,7 @@ export function itemList(name: string, products: Product[]) {
   };
 }
 
-export function productLd(p: Product, description: string) {
+export function productLd(p: Product, description: string, reviews: Review[] = []) {
   const inStock = p.status === 'SALE';
   return {
     '@context': 'https://schema.org',
@@ -86,6 +86,21 @@ export function productLd(p: Product, description: string) {
             bestRating: 5,
             worstRating: 1,
           },
+        }
+      : {}),
+    // 페이지에 실제로 보이는 후기만 넣는다 (구조화 데이터와 화면 내용 일치)
+    ...(reviews.some((r) => r.rating && r.text)
+      ? {
+          review: reviews
+            .filter((r) => r.rating && r.text)
+            .slice(0, 5)
+            .map((r) => ({
+              '@type': 'Review',
+              author: { '@type': 'Person', name: r.author },
+              ...(r.date ? { datePublished: r.date } : {}),
+              reviewBody: r.text,
+              reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: 5, worstRating: 1 },
+            })),
         }
       : {}),
     offers: {
