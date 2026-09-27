@@ -78,7 +78,7 @@ const intro =
         <h1>{p.name}</h1>
         {
           p.rating && p.reviewCount ? (
-            <div class="rating-line">★ <b>{p.rating}</b> · 스마트스토어 리뷰 {p.reviewCount.toLocaleString('ko-KR')}개</div>
+            <div class="rating-line">★ <b>{p.rating}</b> · 최근 1년 스마트스토어 리뷰 {p.reviewCount.toLocaleString('ko-KR')}개</div>
           ) : null
         }
 
@@ -134,9 +134,10 @@ const intro =
             {p.rating && (
               <p class="review-avg">
                 <span class="stars" aria-hidden="true">{'★'.repeat(Math.round(p.rating))}{'☆'.repeat(5 - Math.round(p.rating))}</span>
-                <span>평균 별점 <b>{p.rating.toFixed(1)}</b> / 5</span>
+                <span>최근 1년 평균 별점 <b>{p.rating.toFixed(1)}</b> / 5</span>
               </p>
             )}
+            <p class="review-basis">스마트스토어에 최근 1년간 등록된 리뷰 기준입니다.</p>
             <ul class="pdp-reviews">
               {reviews.map((r) => (
                 <li>

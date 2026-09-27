@@ -230,6 +230,7 @@ main { min-height: 60vh; }
 .buy-note { margin-top: 10px; font-size: 13px; color: var(--ink-2); }
 .pdp-body .review-avg { display: flex; align-items: center; gap: 8px; margin: -2px 0 14px; color: var(--ink); font-size: 15px; }
 .review-avg .stars { color: #b45309; font-size: 18px; letter-spacing: 1px; }
+.pdp-body .review-basis { margin: -8px 0 14px; font-size: 13px; }
 .pdp-reviews { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 12px; }
 .pdp-reviews li { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
 .pdp-reviews .stars { color: #b45309; letter-spacing: 1px; font-size: 14px; }
