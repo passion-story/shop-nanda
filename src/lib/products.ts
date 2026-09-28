@@ -220,19 +220,17 @@ export function getReviews(): (Review & { product: Product })[] {
     .filter((r): r is Review & { product: Product } => !!r.product && r.product.listed);
 }
 
-/** 상품 상세에 보여줄 리뷰: 내용이나 사진이 있는 3점 이상 리뷰만, 사진 리뷰 먼저 → 최신순 (메인용 reviews.json 과 가져온 리뷰를 합쳐 중복 제거) */
+/** 상품 상세에 보여줄 리뷰: 내용이나 사진이 있는 4점 이상 리뷰만, 사진 리뷰 먼저 → 최신순 (메인용 reviews.json 과 가져온 리뷰를 합쳐 작성자당 1건) */
 export function getProductReviews(productId: string, limit = 6): Review[] {
   const all = [
     ...(readJson<{ reviews?: Review[] }>('reviews.json')?.reviews ?? []),
     ...(readJson<{ reviews?: Review[] }>('store-reviews.json')?.reviews ?? []),
-  ].filter((r) => r.productId === productId && (r.text || r.photo) && (r.rating ?? 5) >= 3); // 3점 미만은 노출하지 않는다 (평균 평점·리뷰 수에는 포함)
+  ].filter((r) => r.productId === productId && (r.text || r.photo) && (r.rating ?? 5) >= 4); // 4점 미만은 노출하지 않는다 (평균 평점·리뷰 수에는 포함)
+  // 같은 작성자의 리뷰는 상품당 1건만 보여준다 (같은 글·같은 사진을 여러 번 올린 경우 포함). 사진 리뷰 → 최신순으로 먼저 온 것을 남긴다.
   const seen = new Set<string>();
   return all
-    .filter((r) => {
-      const key = `${r.text}|${r.photo ?? ''}`;
-      return !seen.has(key) && !!seen.add(key);
-    })
     .sort((a, b) => Number(!!b.photo) - Number(!!a.photo) || b.date.localeCompare(a.date))
+    .filter((r) => !seen.has(r.author) && !!seen.add(r.author))
     .slice(0, limit);
 }
 

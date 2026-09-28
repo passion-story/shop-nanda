@@ -87,7 +87,8 @@ for (const row of rows.slice(headerIdx + 1)) {
   // 스토어에서 숨겨진(블라인드 등) 리뷰는 제외
   const display = String(get(row, 'display') ?? '').trim();
   if (display && display !== '정상') continue;
-  const text = String(get(row, 'text') ?? '').replace(/\s+/g, ' ').trim().slice(0, 500);
+  // 사용자 영역 문자(깨진 이모지 등, 화면에 □로 보임)는 지운다
+  const text = String(get(row, 'text') ?? '').replace(/[\ue000-\uf8ff]/g, '').replace(/\s+/g, ' ').trim().slice(0, 500);
   if (PERSONAL.test(text)) {
     dropped++;
     continue;
