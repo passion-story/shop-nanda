@@ -12,6 +12,7 @@
     "check": "astro check",
     "import": "node scripts/import-excel.mjs",
     "import:reviews": "node scripts/import-reviews.mjs",
+    "generate:og": "node scripts/generate-og.mjs",
     "check:sensitive": "node scripts/check-sensitive.mjs"
   },
   "dependencies": {
