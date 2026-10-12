@@ -74,7 +74,6 @@ export function productLd(p: Product, description: string, reviews: Review[] = [
     name: p.name,
     description,
     sku: p.id,
-    category: p.category.name,
     ...(p.images.length ? { image: p.images.map((u) => (u.startsWith('/') ? abs(u) : imageFull(u))) } : {}),
     brand: { '@type': 'Brand', name: SITE.name },
     ...(p.rating && p.reviewCount
