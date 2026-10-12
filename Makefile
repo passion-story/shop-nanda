@@ -29,4 +29,4 @@ sensitive: ## 커밋 전 민감정보 점검 (전체 파일)
 	npm run check:sensitive -- --all
 
 clean: ## 빌드 산출물 삭제
-	rm -rf dist .astro
+	npm run clean

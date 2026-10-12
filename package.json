@@ -10,6 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "clean": "node -e \"for (const d of ['dist', '.astro']) require('fs').rmSync(d, { recursive: true, force: true })\"",
     "import": "node scripts/import-excel.mjs",
     "import:reviews": "node scripts/import-reviews.mjs",
     "generate:og": "node scripts/generate-og.mjs",
