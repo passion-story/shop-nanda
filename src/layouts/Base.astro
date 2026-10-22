@@ -42,8 +42,7 @@ const description = clamp(rawDescription, MAX_DESCRIPTION);
 // meta keywords: 페이지 키워드 → 사이트 공통 키워드 순, 중복 제거, 최대 15개
 const keywords = [...new Set([...pageKeywords, ...SITE.keywords])].slice(0, 15).join(', ');
 const fullTitle = title && titleFull ? title : title ? `${title} | ${SITE.name}` : `${SITE.name} - ${SITE.tagline}`;
-// GA4 측정 ID 형식(G-XXXXXXXXXX)이 아니면 스크립트를 넣지 않는다 (오타로 인한 잘못된 태그 방지)
-const gaId = /^G-[A-Z0-9]{6,}$/i.test(SITE.analyticsId) ? SITE.analyticsId : '';
+const gaId = SITE.analyticsId;
 const canonical = abs(path);
 const ogImage = abs(image);
 // 샘플 데이터로 빌드된 사이트가 색인되지 않도록 자동으로 noindex 처리
@@ -65,6 +64,7 @@ const robots = isSampleData()
     <meta name="description" content={description} />
     <meta name="keywords" content={keywords} />
     <meta name="robots" content={robots} />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={href('/favicon.svg')} type="image/svg+xml" />
     <meta name="theme-color" content="#c2416c" />
@@ -94,11 +94,6 @@ const robots = isSampleData()
       gaId && (
         <>
           <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
-          <script
-            is:inline
-            set:html={`window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag('js',new Date());gtag('config','${gaId}');`}
-          />
-
         </>
       )
     }
@@ -111,17 +106,32 @@ const robots = isSampleData()
     </main>
     <Footer />
 
-    <script is:inline>
-      // 스마트스토어로 나가는 클릭을 GA4 이벤트로 남긴다 (분석 ID 설정 시에만 gtag 가 존재)
-      document.addEventListener('click', (e) => {
-        const a = e.target instanceof Element && e.target.closest('a[data-outbound]');
-        if (!a || typeof window.gtag !== 'function') return;
-        window.gtag('event', 'click_smartstore', {
-          link_url: a.href,
-          product_id: a.dataset.productId || '',
-          location: a.dataset.outbound,
+    <script>
+      // CSP 해시가 자동으로 붙도록 is:inline 이 아닌 일반 스크립트로 둔다.
+      import { SITE } from '../config/site';
+
+      const id = SITE.analyticsId;
+      if (id) {
+        const w = window as unknown as { dataLayer: unknown[]; gtag: (...args: unknown[]) => void };
+        w.dataLayer = w.dataLayer || [];
+        w.gtag = function () {
+          // gtag.js 는 arguments 객체 그대로를 받아야 한다
+          w.dataLayer.push(arguments);
+        };
+        w.gtag('js', new Date());
+        w.gtag('config', id);
+
+        // 스마트스토어로 나가는 클릭을 GA4 이벤트로 남긴다
+        document.addEventListener('click', (e) => {
+          const a = e.target instanceof Element ? e.target.closest<HTMLAnchorElement>('a[data-outbound]') : null;
+          if (!a) return;
+          w.gtag('event', 'click_smartstore', {
+            link_url: a.href,
+            product_id: a.dataset.productId || '',
+            location: a.dataset.outbound,
+          });
         });
-      });
+      }
     </script>
   </body>
 </html>

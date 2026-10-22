@@ -13,4 +13,23 @@ export default defineConfig({
   base: BASE_PATH,
   trailingSlash: 'always',
   build: { format: 'directory' },
+  // GitHub Pages 는 응답 헤더를 바꿀 수 없어, 빌드 시 인라인 스크립트·스타일 해시로 만든 CSP 를 <meta> 로 넣는다.
+  // 외부 리소스를 새로 쓰면(이미지 호스트, 분석 도구 등) 아래 목록에 추가해야 차단되지 않는다.
+  security: {
+    csp: {
+      algorithm: 'SHA-256',
+      scriptDirective: { resources: ["'self'", 'https://www.googletagmanager.com'] },
+      styleDirective: { resources: ["'self'", 'https://cdn.jsdelivr.net'] },
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data: https://shop-phinf.pstatic.net https://phinf.pstatic.net https://www.googletagmanager.com https://*.google-analytics.com",
+        "font-src 'self' https://cdn.jsdelivr.net",
+        "connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        'upgrade-insecure-requests',
+      ],
+    },
+  },
 });

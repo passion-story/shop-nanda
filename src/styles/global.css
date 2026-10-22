@@ -274,3 +274,23 @@ details.faq p { margin-top: 10px; color: var(--ink-2); }
 .site-footer .f-biz span + span::before { content: '|'; margin: 0 8px; color: #4a413d; }
 .site-footer .f-biz span.line-start::before { content: none; }
 .site-footer .f-note { margin-top: 12px; color: #8b827e; }
+
+/* ---------- 인라인 style 대체 (CSP 해시 정책에서 style 속성이 차단되므로 클래스로 둔다) ---------- */
+[data-cat='wig'] { --ph: #8a5a44; }
+[data-cat='beauty-tool'] { --ph: #d97a9b; }
+[data-cat='hair-pin'] { --ph: #c2416c; }
+[data-cat='hair-tie'] { --ph: #e58a1f; }
+[data-cat='hair-band'] { --ph: #5b7fa6; }
+[data-cat='living'] { --ph: #5f9a8a; }
+[data-cat='fashion-goods'] { --ph: #7a6bb0; }
+.banner-deal { background: linear-gradient(135deg, #e5303f, #f0774d); }
+.banner-fashion { background: linear-gradient(135deg, #5b4b8a, #8a72c4); }
+.banner-beauty { background: linear-gradient(135deg, #d97a9b, #f2a8bd); }
+.spacer-16 { height: 16px; }
+.spacer-20 { height: 20px; }
+.mt-16 { margin-top: 16px; }
+.mt-20 { margin-top: 20px; }
+.mt-24 { margin-top: 24px; }
+.empty-title { font-size: 28px; margin-bottom: 8px; }
+.text-link { color: var(--brand); text-decoration: underline; }
+.section.section-tight { padding-top: 8px; }

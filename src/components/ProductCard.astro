@@ -38,7 +38,7 @@ const img = p.image ? cardImage(p.image) : null;
           referrerpolicy="no-referrer"
         />
       ) : (
-        <div class="thumb-ph" style={`--ph:${p.category.accent}`}>
+        <div class="thumb-ph" data-cat={p.category.slug}>
           <span>{p.category.name}<small>이미지 준비중</small></span>
         </div>
       )

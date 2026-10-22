@@ -48,7 +48,8 @@ export const SITE = {
     google: '', // TODO: 서치콘솔 > 속성 추가 > HTML 태그 방식의 content 값
   },
 
-  analyticsId: import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '', // 'G-XXXXXXXXXX'
+  // GA4 측정 ID 형식(G-XXXXXXXXXX)이 아니면 비운다 (오타로 인한 잘못된 태그 방지)
+  analyticsId: /^G-[A-Z0-9]{6,}$/i.test(import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? '') ? import.meta.env.PUBLIC_GA_MEASUREMENT_ID : '',
 
   /**
    * 사업자 정보 (전자상거래법상 표시 의무 대응). 비어 있는 항목은 푸터에 출력하지 않는다.

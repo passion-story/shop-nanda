@@ -16,9 +16,9 @@ const heroImages = getBest(12).filter((p) => p.image).slice(0, 4);
 const catCount = (slug: string) => getListed().filter((p) => p.category.slug === slug).length;
 
 const banners = [
-  { en: 'The Best Deal', ko: '지금 가장 많이 할인 중인 상품', href: '/products/?sort=discount', bg: 'linear-gradient(135deg,#e5303f,#f0774d)' },
-  { en: 'Fashion Access.', ko: '가방·스카프·모자 패션잡화', href: '/category/fashion-goods/', bg: 'linear-gradient(135deg,#5b4b8a,#8a72c4)' },
-  { en: 'Beauty Tool', ko: 'Help you to relax', href: '/category/beauty-tool/', bg: 'linear-gradient(135deg,#d97a9b,#f2a8bd)' },
+  { en: 'The Best Deal', ko: '지금 가장 많이 할인 중인 상품', href: '/products/?sort=discount', theme: 'deal' },
+  { en: 'Fashion Access.', ko: '가방·스카프·모자 패션잡화', href: '/category/fashion-goods/', theme: 'fashion' },
+  { en: 'Beauty Tool', ko: 'Help you to relax', href: '/category/beauty-tool/', theme: 'beauty' },
 ];
 ---
 
@@ -69,7 +69,7 @@ const banners = [
             const count = catCount(c.slug);
             return (
               <a class="cat-tile" href={href(`/category/${c.slug}/`)}>
-                <span class="cover" style={`--ph:${c.accent}`}>
+                <span class="cover" data-cat={c.slug}>
                   {cover?.image ? (
                     <img src={imageSized(cover.image, 'f300_300')} alt="" width="300" height="300" loading="lazy" decoding="async" referrerpolicy="no-referrer" />
                   ) : (
@@ -122,7 +122,7 @@ const banners = [
       <div class="banner-grid">
         {
           banners.map((b) => (
-            <a class="banner" href={href(b.href)} style={`background:${b.bg}`}>
+            <a class={`banner banner-${b.theme}`} href={href(b.href)}>
               <div><div class="en">{b.en}</div><div class="ko">{b.ko}</div></div>
               <span class="go">바로가기 ›</span>
             </a>
@@ -144,7 +144,7 @@ const banners = [
                   {r.product.image ? (
                     <img src={imageSized(r.product.image, 'f120_120')} alt={r.product.name} width="96" height="96" loading="lazy" referrerpolicy="no-referrer" />
                   ) : (
-                    <div class="thumb-ph" style={`--ph:${r.product.category.accent}`}>{r.product.category.name}</div>
+                    <div class="thumb-ph" data-cat={r.product.category.slug}>{r.product.category.name}</div>
                   )}
                 </div>
                 <div class="body">

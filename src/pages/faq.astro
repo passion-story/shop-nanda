@@ -42,7 +42,7 @@ const faqs = [
   <div class="container">
     <article class="prose">
       <h1>자주 묻는 질문</h1>
-      <div style="margin-top:16px">
+      <div class="mt-16">
         {
           faqs.map((f) => (
             <details class="faq">
@@ -52,7 +52,7 @@ const faqs = [
           ))
         }
       </div>
-      <p style="margin-top:24px">
+      <p class="mt-24">
         더 궁금한 점은 <a href={SITE.store.url} target="_blank" rel="noopener">{SITE.store.label}</a> 문의를 이용해 주세요.
         · <a href={href('/shipping/')}>배송·교환·반품 안내</a>
       </p>

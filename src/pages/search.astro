@@ -1,6 +1,5 @@
 ---
 import Base from '../layouts/Base.astro';
-import { href } from '../lib/urls';
 ---
 
 <Base title="상품 검색" description="샵난다 상품 검색" path="/search/" noindex nofollow>
@@ -9,28 +8,33 @@ import { href } from '../lib/urls';
       <h1 id="search-title">상품 검색</h1>
       <p id="search-status" aria-live="polite"></p>
     </div>
-    <div style="height:20px"></div>
+    <div class="spacer-20"></div>
     <ul class="product-grid" id="search-results"></ul>
   </div>
 
-  <script define:vars={{ indexUrl: href('/search-index.json') }}>
+  <script>
+    // CSP 해시가 자동으로 붙도록 define:vars(is:inline) 대신 일반 스크립트로 둔다.
+    import { href } from '../lib/urls';
+
+    type Item = { n: string; t: string[]; c: string; p: number; r: number; i: string | null; u: string };
     const q = (new URLSearchParams(location.search).get('q') || '').trim();
-    const status = document.getElementById('search-status');
-    const list = document.getElementById('search-results');
-    const input = document.getElementById('q');
+    const status = document.getElementById('search-status')!;
+    const list = document.getElementById('search-results')!;
+    const input = document.getElementById('q') as HTMLInputElement | null;
     if (input) input.value = q;
 
-    const norm = (s) => s.toLowerCase().replace(/\s+/g, '');
-    const won = (n) => n.toLocaleString('ko-KR') + '원';
-    const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const norm = (s: string) => s.toLowerCase().replace(/\s+/g, '');
+    const won = (n: number) => n.toLocaleString('ko-KR') + '원';
+    const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    const esc = (s: string) => s.replace(/[&<>"']/g, (c) => ESC[c]);
 
     if (!q) {
       status.textContent = '검색어를 입력해 주세요.';
     } else {
-      document.getElementById('search-title').textContent = `“${q}” 검색 결과`;
-      fetch(indexUrl)
+      document.getElementById('search-title')!.textContent = `“${q}” 검색 결과`;
+      fetch(href('/search-index.json'))
         .then((r) => r.json())
-        .then((items) => {
+        .then((items: Item[]) => {
           const words = q.toLowerCase().split(/\s+/).filter(Boolean);
           const hits = items.filter((it) => {
             const hay = norm(`${it.n} ${it.t.join(' ')} ${it.c}`);
@@ -47,7 +51,9 @@ import { href } from '../lib/urls';
             )
             .join('');
         })
-        .catch(() => (status.textContent = '검색 중 오류가 발생했습니다.'));
+        .catch(() => {
+          status.textContent = '검색 중 오류가 발생했습니다.';
+        });
     }
   </script>
 </Base>
