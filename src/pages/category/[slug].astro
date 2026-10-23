@@ -22,7 +22,6 @@ const crumbs = [{ name: '홈', path: '/' }, { name: category.name, path }];
   title={`${category.name}-${SITE.name}`}
   titleFull
   description={category.description}
-  keywords={category.seoKeywords}
   path={path}
   noindex={products.length === 0}
   activeNav={category.slug}
@@ -43,5 +42,9 @@ const crumbs = [{ name: '홈', path: '/' }, { name: category.name, path }];
       }
     </div>
     <ProductListing products={products} />
+    <section class="prose">
+      <h2>{category.name} 고르는 법</h2>
+      <p>{category.intro}</p>
+    </section>
   </div>
 </Base>

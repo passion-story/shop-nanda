@@ -17,7 +17,6 @@ interface Props {
   noindex?: boolean;
   nofollow?: boolean; // true면 이 페이지의 링크도 따라가지 않음 (검색결과·오류 페이지 등 저품질 페이지용)
   jsonLd?: Record<string, unknown>[];
-  keywords?: string[]; // 페이지 고유 키워드 (사이트 공통 키워드 앞에 붙는다)
   activeNav?: string;
   stickyBuy?: boolean;
 }
@@ -32,15 +31,12 @@ const {
   noindex = false,
   nofollow = false,
   jsonLd = [],
-  keywords: pageKeywords = [],
   activeNav,
   stickyBuy = false,
 } = Astro.props;
 
 // meta description / og:description / twitter:description 은 80자 이내로 통일 (네이버 서치어드바이저 권고)
 const description = clamp(rawDescription, MAX_DESCRIPTION);
-// meta keywords: 페이지 키워드 → 사이트 공통 키워드 순, 중복 제거, 최대 15개
-const keywords = [...new Set([...pageKeywords, ...SITE.keywords])].slice(0, 15).join(', ');
 const fullTitle = title && titleFull ? title : title ? `${title} | ${SITE.name}` : `${SITE.name} - ${SITE.tagline}`;
 const gaId = SITE.analyticsId;
 const canonical = abs(path);
@@ -62,7 +58,6 @@ const robots = isSampleData()
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    <meta name="keywords" content={keywords} />
     <meta name="robots" content={robots} />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <link rel="canonical" href={canonical} />
